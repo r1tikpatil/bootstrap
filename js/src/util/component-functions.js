@@ -5,30 +5,38 @@
  * --------------------------------------------------------------------------
  */
 
-import EventHandler from '../dom/event-handler'
-import { getElementFromSelector, isDisabled } from './index'
+import EventHandler from "../dom/event-handler";
+import { getElementFromSelector, isDisabled } from "./index";
 
-const enableDismissTrigger = (component, method = 'hide') => {
-  const clickEvent = `click.dismiss${component.EVENT_KEY}`
-  const name = component.NAME
+const enableDismissTrigger = (component, method = "hide") => {
+  const clickEvent = `click.dismiss${component.EVENT_KEY}`;
+  const name = component.NAME;
 
-  EventHandler.on(document, clickEvent, `[data-bs-dismiss="${name}"]`, function (event) {
-    if (['A', 'AREA'].includes(this.tagName)) {
-      event.preventDefault()
-    }
+  if (typeof window !== "undefined") {
+    console.log("You are on the browser");
+    EventHandler.on(
+      document,
+      clickEvent,
+      `[data-bs-dismiss="${name}"]`,
+      function (event) {
+        if (["A", "AREA"].includes(this.tagName)) {
+          event.preventDefault();
+        }
 
-    if (isDisabled(this)) {
-      return
-    }
+        if (isDisabled(this)) {
+          return;
+        }
 
-    const target = getElementFromSelector(this) || this.closest(`.${name}`)
-    const instance = component.getOrCreateInstance(target)
+        const target = getElementFromSelector(this) || this.closest(`.${name}`);
+        const instance = component.getOrCreateInstance(target);
 
-    // Method argument is left, for Alert and only, as it doesn't implement the 'hide' method
-    instance[method]()
-  })
-}
+        // Method argument is left, for Alert and only, as it doesn't implement the 'hide' method
+        instance[method]();
+      }
+    );
+  } else {
+    console.log("you are on the server");
+  }
+};
 
-export {
-  enableDismissTrigger
-}
+export { enableDismissTrigger };
